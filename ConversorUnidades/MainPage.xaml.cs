@@ -16,55 +16,27 @@ public partial class MainPage : TabbedPage
             {
 				int distanciaValue = int.Parse(distanciaEntry.Text);
 
-				double distanciaConvertida = 0;
-				if(unidadeDistancia.SelectedItem.ToString() == "KM")
+				var fatoresConversoes = new Dictionary<string, double> 
 				{
-					switch (unidadeDistanciaAlvo.SelectedItem.ToString())
-					{
-						case "M": 
-							distanciaConvertida = distanciaValue * 1000;
-							break;
-						
-						case "CM": 
-							distanciaConvertida = distanciaValue * 100000;
-							break;
-						default: 
-							distanciaConvertida = distanciaValue;
-							break;
-					}
-				} else if(unidadeDistancia.SelectedItem.ToString() == "M")
+					{"KM", 1000.0},
+					{"M", 1.0},
+					{"CM", 0.01}
+				};
+
+				string unidadeOrigem = unidadeDistancia.SelectedItem.ToString()!;
+				string unidadeAlvo = unidadeDistanciaAlvo.SelectedItem.ToString()!;
+
+				if(fatoresConversoes.ContainsKey(unidadeOrigem) && fatoresConversoes.ContainsKey(unidadeAlvo))
 				{
-					switch (unidadeDistanciaAlvo.SelectedItem.ToString())
-					{
-						case "KM": 
-							distanciaConvertida = distanciaValue / 1000;
-							break;
-						
-						case "CM": 
-							distanciaConvertida = distanciaValue * 100;
-							break;
-						default: 
-							distanciaConvertida = distanciaValue;
-							break;
-					}
-				} else if(unidadeDistancia.SelectedItem.ToString() == "CM")
-				{
-					switch (unidadeDistanciaAlvo.SelectedItem.ToString())
-					{
-						case "KM": 
-							distanciaConvertida = distanciaValue / 100000;
-							break;
-						
-						case "M": 
-							distanciaConvertida = distanciaValue / 100;
-							break;
-						default: 
-							distanciaConvertida = distanciaValue;
-							break;
-					}
+					double distanciaMetros = distanciaValue * fatoresConversoes[unidadeOrigem];
+
+					double distanciaConvertida = distanciaMetros / fatoresConversoes[unidadeAlvo];
+
+					ResultadoDistancia.Text = distanciaConvertida.ToString();
+				} else {
+					 DisplayAlert("Error", "Unidade de distância inválida", "FECHAR");
 				}
 
-				ResultadoDistancia.Text = distanciaConvertida.ToString(); 
 			}
 			catch (Exception)
             {
